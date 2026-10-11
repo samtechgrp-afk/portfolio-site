@@ -13,6 +13,7 @@ const SHARED = [
   'src/components/builder/page.css',
   'src/components/builder/widgets',
   'src/cms/lib/markdown.js',
+  'src/cms/lib/highlight.js',
 ];
 
 if (!existsSync(join(cms, 'src'))) { console.error(`Can't find the CMS repo at ${cms}. Pass its path: npm run sync -- ../portfolio-cms`); process.exit(1); }

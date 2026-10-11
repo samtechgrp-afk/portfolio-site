@@ -12,7 +12,7 @@ const reveal = () => document.documentElement.classList.remove('home-pending');
     const home = await fetchProject('home', { timeout: 2500 });
     if (home && home.blocks && home.blocks.length) {
       const { mountHome } = await import('./home-render.jsx');
-      mountHome(home);
+      await mountHome(home);
     }
   } catch {
     /* Supabase unreachable: the default layout is shown. */

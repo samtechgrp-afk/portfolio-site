@@ -6,7 +6,7 @@ Static portfolio plus per-project pages that are loaded from Supabase.
 - `src/home.js` + `src/home-render.jsx`: the CMS home page. If a published project with the slug `home` has blocks, it replaces the default layout at `/`. The React renderer is only downloaded in that case. See the Home page notes below.
 - `project.html` + `src/project.jsx`: the project page. It reads the slug from the URL, fetches the published project and renders its blocks with `PageRenderer`.
 - `vercel.json`: rewrites `/work/:slug` to `project.html`.
-- `src/components/builder/`, `src/components/typography.js` and `src/cms/lib/markdown.js`: a copy of the CMS's page renderer, widgets and font helpers. Do not edit them here. After changing them in the CMS repo, run `npm run sync -- ../portfolio-cms`.
+- `src/components/builder/`, `src/components/typography.js` and `src/cms/lib/markdown.js`: a copy of the CMS's page renderer, widgets and font helpers. Do not edit them here. After changing them in the CMS repo, run `npm run sync -- ../portfolio-cms`. The script also copies `cms/lib/highlight.js` and the whole `widgets/` folder (including `HeroCarouselBlock.jsx` and `.css`).
 
 ## Run locally
 
@@ -25,7 +25,8 @@ Push to `main`. Vercel builds with Vite and publishes automatically.
 
 - `/` asks Supabase for the published project with slug `home`. While it waits (2.5 seconds at most) the default layout stays hidden, so there is no flash of the wrong page. If the project is missing, a draft, empty, or the request fails, the default layout is shown.
 - In CMS-home mode the menu links are hidden (they point at default-layout sections) and the contact section at the bottom stays. Use Menu Anchor and Button blocks for your own navigation.
-- Fonts uploaded in the CMS (.ttf, .otf, .woff, .woff2) are stored in Supabase Storage. `PageRenderer` calls `injectFontFace` to add the `@font-face` rule, so they work on both the home page and project pages.
+- Fonts come from the CMS font library (table `fonts`, files in the `fonts` storage bucket). `src/supabase.js` `fetchFonts()` reads the library, and `PageRenderer` loads only the fonts a page uses via `injectFontFace(name, url, format, { weight, style })`, with a preload link. If the library can't be reached, the page still renders with fallback fonts.
+- Blocks marked hidden in the CMS are not rendered. Buttons and carousel items can link to `/work/:slug`, a project's live site, or an anchor.
 - A page that keeps the default fonts uses the portfolio's own font (Schibsted Grotesk).
 
 ## Notes

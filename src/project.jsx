@@ -2,7 +2,7 @@ import { StrictMode, useCallback, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './project.css';
 import PageRenderer from './components/builder/PageRenderer.jsx';
-import { fetchProject } from './supabase.js';
+import { fetchFonts, fetchProject } from './supabase.js';
 import { withSiteFont } from './siteTypography.js';
 
 const EMAIL = 'muelprah@gmail.com';
@@ -49,19 +49,19 @@ if (slugAtStart === 'home') window.location.replace('/');
 
 function App() {
   const slug = slugAtStart;
-  const [state, setState] = useState({ status: slug ? 'loading' : 'missing', project: null });
+  const [state, setState] = useState({ status: slug ? 'loading' : 'missing', project: null, fonts: [] });
 
   const load = useCallback(() => {
     if (!slug) return;
-    setState({ status: 'loading', project: null });
-    fetchProject(slug)
-      .then((project) => setState(project ? { status: 'ok', project } : { status: 'missing', project: null }))
-      .catch(() => setState({ status: 'error', project: null }));
+    setState({ status: 'loading', project: null, fonts: [] });
+    Promise.all([fetchProject(slug), fetchFonts()])
+      .then(([project, fonts]) => setState(project ? { status: 'ok', project, fonts } : { status: 'missing', project: null, fonts: [] }))
+      .catch(() => setState({ status: 'error', project: null, fonts: [] }));
   }, [slug]);
 
   useEffect(load, [load]);
 
-  const { status, project } = state;
+  const { status, project, fonts } = state;
   useEffect(() => {
     if (status !== 'ok') { document.title = 'Project | Samuel Prah'; return; }
     document.title = `${project.title} | Samuel Prah`;
@@ -106,7 +106,7 @@ function App() {
               </header>
 
               {project.blocks?.length ? (
-                <PageRenderer blocks={project.blocks} typography={typography} title={project.title} />
+                <PageRenderer blocks={project.blocks} typography={typography} title={project.title} fonts={fonts} />
               ) : http(project.cover_url) ? (
                 <img className="work__cover" src={project.cover_url} alt="" referrerPolicy="no-referrer" />
               ) : null}

@@ -23,3 +23,22 @@ export async function fetchProject(slug, { timeout = 0 } = {}) {
     if (timer) clearTimeout(timer);
   }
 }
+
+/**
+ * The font library: [{ family, fileUrl, format, weight, style }]. PageRenderer loads only the fonts a page uses.
+ * Returns [] if the library can't be reached, so pages still render with their fallback fonts.
+ */
+export async function fetchFonts({ timeout = 0 } = {}) {
+  const controller = new AbortController();
+  const timer = timeout ? setTimeout(() => controller.abort(), timeout) : null;
+  try {
+    const res = await fetch(`${URL}/rest/v1/fonts?select=family,file_url,format,weight,style&order=family`, { headers: { apikey: KEY }, signal: controller.signal });
+    if (!res.ok) return [];
+    const rows = await res.json();
+    return Array.isArray(rows) ? rows.map((r) => ({ family: r.family, fileUrl: r.file_url, format: r.format, weight: r.weight, style: r.style })) : [];
+  } catch {
+    return [];
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
