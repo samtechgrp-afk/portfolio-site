@@ -12,6 +12,7 @@ const SHARED = [
   'src/components/builder/icons.jsx',
   'src/components/builder/page.css',
   'src/components/builder/widgets',
+  'src/components/builder/design', // the style engine; its editor-only panel/ folder is skipped below
   'src/cms/lib/markdown.js',
   'src/cms/lib/highlight.js',
 ];
@@ -19,6 +20,6 @@ const SHARED = [
 if (!existsSync(join(cms, 'src'))) { console.error(`Can't find the CMS repo at ${cms}. Pass its path: npm run sync -- ../portfolio-cms`); process.exit(1); }
 for (const file of SHARED) {
   mkdirSync(dirname(file), { recursive: true });
-  cpSync(join(cms, file), file, { recursive: true });
+  cpSync(join(cms, file), file, { recursive: true, filter: (src) => !/design[\\/]panel/.test(src) });
   console.log('synced', file);
 }
