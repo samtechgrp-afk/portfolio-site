@@ -1,0 +1,123 @@
+/*
+ * Portfolio design system v2: "dark editorial, warm signal accent".
+ * One source for tokens and site chrome (header, buttons, contact band, footer, lightbox).
+ * Imported by index.html and the project page. Dark is the default; light follows the OS or [data-theme="light"].
+ *
+ * Contrast (measured): ink on paper 17:1 dark / 17:1 light, muted on paper 8:1 / 6:1,
+ * accent on paper 6.9:1 / 4.6:1, on-accent text on accent 6.9:1 / 5.1:1 (all above the 4.5:1 minimum).
+ */
+:root {
+  color-scheme: dark;
+  --ink: #f3f0e8; --muted: #a8a59c; --paper: #0c0c0e; --card: #141417; --card-2: #1c1c21; --line: #2b2b32;
+  --blue: #ff6a3d;          /* accent. Name kept so the page builder and older blocks keep working */
+  --blue-ink: #ff875f;      /* accent hover */
+  --on-accent: #0c0c0e;     /* text on accent surfaces */
+  --glow: rgba(255, 106, 61, 0.16);
+  --font-display: 'Bricolage Grotesque', 'Schibsted Grotesk', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font: var(--font-body);
+  --radius: 20px; --radius-sm: 12px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --space-1: 8px; --space-2: 16px; --space-3: 24px; --space-4: 40px; --space-5: 64px; --space-6: 104px;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    color-scheme: light;
+    --ink: #121214; --muted: #5b5850; --paper: #f5f2eb; --card: #ffffff; --card-2: #efebe2; --line: #ddd8cc;
+    --blue: #c93a10; --blue-ink: #a82f0c; --on-accent: #ffffff; --glow: rgba(201, 58, 16, 0.1);
+  }
+}
+:root[data-theme='light'] {
+  color-scheme: light;
+  --ink: #121214; --muted: #5b5850; --paper: #f5f2eb; --card: #ffffff; --card-2: #efebe2; --line: #ddd8cc;
+  --blue: #c93a10; --blue-ink: #a82f0c; --on-accent: #ffffff; --glow: rgba(201, 58, 16, 0.1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+::selection { background: var(--blue); color: var(--on-accent); }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 6px; }
+.wrap { width: min(1240px, 100% - 40px); margin-inline: auto; }
+.skip { position: absolute; left: 12px; top: -60px; z-index: 50; background: var(--blue); color: var(--on-accent); padding: 12px 18px; border-radius: 999px; font-weight: 600; text-decoration: none; transition: top 0.2s var(--ease); }
+.skip:focus { top: 12px; }
+
+/* ---------- header ---------- */
+.bar { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--paper) 78%, transparent); backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3); border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent); }
+.bar .wrap { display: flex; align-items: center; gap: 24px; height: 72px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font: 700 20px/1 var(--font-display); letter-spacing: -0.02em; text-decoration: none; margin-right: auto; }
+.brand::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 0 5px var(--glow); }
+.bar nav { display: flex; gap: 4px; }
+.bar nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 999px; text-decoration: none; font-weight: 500; font-size: 15px; color: var(--muted); transition: color 0.2s, background 0.2s; }
+.bar nav a:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.menu-btn { display: none; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1.5px solid var(--line); border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; }
+.menu-btn span, .menu-btn span::before, .menu-btn span::after { display: block; width: 18px; height: 2px; background: currentColor; border-radius: 2px; position: relative; transition: transform 0.25s var(--ease), background 0.2s; }
+.menu-btn span::before, .menu-btn span::after { content: ''; position: absolute; left: 0; }
+.menu-btn span::before { top: -6px; } .menu-btn span::after { top: 6px; }
+.menu-btn[aria-expanded='true'] span { background: transparent; }
+.menu-btn[aria-expanded='true'] span::before { transform: translateY(6px) rotate(45deg); }
+.menu-btn[aria-expanded='true'] span::after { transform: translateY(-6px) rotate(-45deg); }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 11px 22px;
+  border-radius: 999px; border: 1.5px solid color-mix(in srgb, var(--ink) 35%, transparent); background: transparent; color: var(--ink);
+  font: 600 15px/1.2 var(--font-body); text-decoration: none; cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s var(--ease);
+}
+.btn:hover { border-color: var(--ink); background: color-mix(in srgb, var(--ink) 10%, transparent); }
+.btn:active { transform: scale(0.97); }
+.btn.fill { background: var(--blue); border-color: var(--blue); color: var(--on-accent); }
+.btn.fill:hover { background: var(--blue-ink); border-color: var(--blue-ink); }
+
+/* ---------- contact band ---------- */
+.contact { position: relative; overflow: hidden; background: var(--blue); color: var(--on-accent); padding: var(--space-6) 0; }
+.contact::after { content: ''; position: absolute; right: -8%; top: -40%; width: 560px; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 255, 255, 0.22), transparent); pointer-events: none; }
+.contact .wrap { position: relative; z-index: 1; }
+.contact h2 { font: 800 clamp(44px, 8vw, 112px)/0.95 var(--font-display); letter-spacing: -0.04em; word-spacing: 0.06em; margin: 0 0 24px; max-width: 14ch; text-wrap: balance; }
+.contact p { margin: 0 0 32px; max-width: 46ch; font-size: 19px; opacity: 0.85; }
+.contact .row { display: flex; flex-wrap: wrap; gap: 12px; }
+.contact .btn { border-color: color-mix(in srgb, var(--on-accent) 55%, transparent); color: var(--on-accent); }
+.contact .btn:hover { background: color-mix(in srgb, var(--on-accent) 14%, transparent); border-color: var(--on-accent); }
+.contact .btn.fill { background: var(--on-accent); border-color: var(--on-accent); color: var(--blue); }
+.contact .btn.fill:hover { background: color-mix(in srgb, var(--on-accent) 88%, var(--blue)); }
+
+footer { padding: 32px 0 40px; font-size: 14px; color: var(--muted); background: var(--paper); }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
+
+/* ---------- lightbox ---------- */
+dialog { border: 0; padding: 0; background: transparent; max-width: 100vw; max-height: 100vh; width: 100vw; height: 100vh; }
+dialog::backdrop { background: rgba(6, 6, 8, 0.94); backdrop-filter: blur(6px); }
+.lb { display: grid; place-items: center; height: 100%; padding: 64px 20px 72px; position: relative; }
+.lb img { max-height: 100%; max-width: min(1200px, 100%); object-fit: contain; border-radius: 8px; }
+.lb .t { position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; color: #fff; font-size: 15px; }
+.lb button { all: unset; cursor: pointer; color: #fff; position: absolute; width: 48px; height: 48px; display: grid; place-items: center; font-size: 28px; border-radius: 50%; background: rgba(255, 255, 255, 0.12); transition: background 0.2s; }
+.lb button:hover { background: rgba(255, 255, 255, 0.26); }
+.lb button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.lb .x { top: 14px; right: 16px; } .lb .p { left: 14px; top: 50%; } .lb .n { right: 14px; top: 50%; }
+
+/* ---------- small screens: the menu becomes a disclosure ---------- */
+@media (max-width: 900px) {
+  .menu-btn { display: inline-flex; }
+  .bar .wrap { gap: 12px; height: 64px; }
+  .bar nav { display: none; position: absolute; left: 0; right: 0; top: 100%; flex-direction: column; gap: 0; padding: 8px 20px 20px; background: var(--paper); border-bottom: 1px solid var(--line); }
+  .bar nav.is-open { display: flex; }
+  .bar nav a { min-height: 52px; padding: 0 4px; border-radius: 0; font-size: 18px; border-bottom: 1px solid var(--line); }
+  .bar .btn.fill { display: none; }
+}
+
+/* ---------- motion: transform/opacity only, and none for people who ask for less ---------- */
+@supports (animation-timeline: view()) {
+  @keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+  .reveal { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
+}
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--glow); } 100% { box-shadow: 0 0 0 10px transparent; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}

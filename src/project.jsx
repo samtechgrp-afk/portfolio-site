@@ -21,15 +21,17 @@ const http = (u) => /^https?:\/\//i.test(u || '');
 const formatDate = (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
 
 function TopBar() {
+  const [open, setOpen] = useState(false);
   return (
     <header className="bar">
       <div className="wrap">
         <a className="brand" href="/">Samuel Prah</a>
-        <nav aria-label="Primary">
+        <nav id="site-nav" aria-label="Primary" className={open ? 'is-open' : ''} onClick={(e) => e.target.closest('a') && setOpen(false)}>
           <a href="/#projects">All work</a>
           <a href="/#about">About</a>
         </nav>
         <a className="btn fill" href={`mailto:${EMAIL}?subject=Project%20enquiry`}>Hire me</a>
+        <button type="button" className="menu-btn" aria-label="Menu" aria-expanded={open} aria-controls="site-nav" onClick={() => setOpen((o) => !o)}><span /></button>
       </div>
     </header>
   );
