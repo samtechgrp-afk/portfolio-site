@@ -42,3 +42,22 @@ export async function fetchFonts({ timeout = 0 } = {}) {
     if (timer) clearTimeout(timer);
   }
 }
+
+/**
+ * Published projects for Project Grid blocks: [{ title, slug, summary, coverUrl, categories }].
+ * The home page itself is never listed. Returns [] if they can't be loaded.
+ */
+export async function fetchProjects({ timeout = 0 } = {}) {
+  const controller = new AbortController();
+  const timer = timeout ? setTimeout(() => controller.abort(), timeout) : null;
+  try {
+    const res = await fetch(`${URL}/rest/v1/projects?select=title,slug,summary,cover_url,categories&status=eq.published&slug=neq.home&order=created_at.desc&limit=24`, { headers: { apikey: KEY }, signal: controller.signal });
+    if (!res.ok) return [];
+    const rows = await res.json();
+    return Array.isArray(rows) ? rows.map((r) => ({ title: r.title, slug: r.slug, summary: r.summary, coverUrl: r.cover_url, categories: r.categories || [] })) : [];
+  } catch {
+    return [];
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}

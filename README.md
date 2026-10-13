@@ -34,3 +34,8 @@ Push to `main`. Vercel builds with Vite and publishes automatically.
 - Only projects with status **published** are visible to visitors. Drafts are hidden by row-level security in the database.
 - The Supabase URL and publishable key in `src/supabase.js` and `index.html` are public by design. Never put a `service_role` key in this repo.
 - Project fonts: if a project keeps the default fonts, it uses the portfolio's own font (Schibsted Grotesk).
+
+
+## Home page from the CMS
+
+If the CMS has a published project with slug `home`, `/` renders its blocks in place of the built-in layout (the built-in layout is the fallback). Menu links are rebuilt from the page's labelled Menu Anchor blocks. The Project grid block pulls published projects from Supabase. Re-sync shared code with `npm run sync -- ../portfolio-cms`.

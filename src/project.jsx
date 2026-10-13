@@ -2,7 +2,8 @@ import { StrictMode, useCallback, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './project.css';
 import PageRenderer from './components/builder/PageRenderer.jsx';
-import { fetchFonts, fetchProject } from './supabase.js';
+import { fetchFonts, fetchProject, fetchProjects } from './supabase.js';
+import { usesBlockType } from './components/builder/blockTree.js';
 import { withSiteFont } from './siteTypography.js';
 
 const EMAIL = 'muelprah@gmail.com';
@@ -49,19 +50,23 @@ if (slugAtStart === 'home') window.location.replace('/');
 
 function App() {
   const slug = slugAtStart;
-  const [state, setState] = useState({ status: slug ? 'loading' : 'missing', project: null, fonts: [] });
+  const [state, setState] = useState({ status: slug ? 'loading' : 'missing', project: null, fonts: [], projects: [] });
 
   const load = useCallback(() => {
     if (!slug) return;
-    setState({ status: 'loading', project: null, fonts: [] });
-    Promise.all([fetchProject(slug), fetchFonts()])
-      .then(([project, fonts]) => setState(project ? { status: 'ok', project, fonts } : { status: 'missing', project: null, fonts: [] }))
-      .catch(() => setState({ status: 'error', project: null, fonts: [] }));
+    setState({ status: 'loading', project: null, fonts: [], projects: [] });
+    fetchProject(slug)
+      .then(async (project) => {
+        if (!project) return setState({ status: 'missing', project: null, fonts: [], projects: [] });
+        const [fonts, projects] = await Promise.all([fetchFonts(), usesBlockType(project.blocks || [], 'projectgrid') ? fetchProjects() : Promise.resolve([])]);
+        return setState({ status: 'ok', project, fonts, projects });
+      })
+      .catch(() => setState({ status: 'error', project: null, fonts: [], projects: [] }));
   }, [slug]);
 
   useEffect(load, [load]);
 
-  const { status, project, fonts } = state;
+  const { status, project, fonts, projects } = state;
   useEffect(() => {
     if (status !== 'ok') { document.title = 'Project | Samuel Prah'; return; }
     document.title = `${project.title} | Samuel Prah`;
@@ -106,7 +111,7 @@ function App() {
               </header>
 
               {project.blocks?.length ? (
-                <PageRenderer blocks={project.blocks} typography={typography} title={project.title} fonts={fonts} />
+                <PageRenderer blocks={project.blocks} typography={typography} title={project.title} fonts={fonts} projects={projects} />
               ) : http(project.cover_url) ? (
                 <img className="work__cover" src={project.cover_url} alt="" referrerPolicy="no-referrer" />
               ) : null}
