@@ -1,4 +1,5 @@
 import { fetchProject } from './supabase.js';
+import './siteSettings.js'; // applies the site icon chosen in the CMS
 
 /*
  * Home page from the CMS. The project with slug "home" replaces the default layout when it is published

@@ -6,6 +6,8 @@ import { dirname, join } from 'node:path';
 const cms = process.argv[2] || '../portfolio-cms';
 const SHARED = [
   'src/components/typography.js',
+  'src/components/siteIcon.js',
+  'src/components/builder/inlineEdit.jsx',
   'src/components/builder/PageRenderer.jsx',
   'src/components/builder/WidgetRegistry.jsx',
   'src/components/builder/blockTree.js',

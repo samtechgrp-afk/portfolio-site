@@ -4,6 +4,7 @@ import PageRenderer from './components/builder/PageRenderer.jsx';
 import { collectMenuLinks, usesBlockType } from './components/builder/blockTree.js';
 import { withSiteFont } from './siteTypography.js';
 import { fetchFonts, fetchProjects } from './supabase.js';
+import { siteSettings } from './siteSettings.js';
 
 /** Replaces the top menu with links to the page's Menu Anchor blocks that have a menu label. */
 function buildMenu(blocks) {
@@ -18,14 +19,15 @@ function buildMenu(blocks) {
 export async function mountHome(project) {
   const host = document.getElementById('cms-home');
   // Fonts and the project list load in parallel. Either is [] if unreachable, and the page still renders.
-  const [fonts, projects] = await Promise.all([
+  const [settings, fonts, projects] = await Promise.all([
+    siteSettings,
     fetchFonts({ timeout: 2000 }),
     usesBlockType(project.blocks, 'projectgrid') ? fetchProjects({ timeout: 2000 }) : Promise.resolve([]),
   ]);
   flushSync(() => {
     createRoot(host).render(
       <div className="wrap">
-        <PageRenderer blocks={project.blocks} typography={withSiteFont(project.typography)} title={project.title} fonts={fonts} projects={projects} />
+        <PageRenderer blocks={project.blocks} typography={withSiteFont(project.typography)} title={project.title} fonts={fonts} projects={projects} siteIconUrl={settings.siteIconUrl || ''} />
       </div>
     );
   });

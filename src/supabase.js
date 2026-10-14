@@ -61,3 +61,19 @@ export async function fetchProjects({ timeout = 0 } = {}) {
     if (timer) clearTimeout(timer);
   }
 }
+
+/** Global site settings ({ siteIconUrl, ... }). Returns {} if they can't be reached, so the default icon stays. */
+export async function fetchSiteSettings({ timeout = 2500 } = {}) {
+  const controller = new AbortController();
+  const timer = timeout ? setTimeout(() => controller.abort(), timeout) : null;
+  try {
+    const res = await fetch(`${URL}/rest/v1/site_settings?select=value&key=eq.site&limit=1`, { headers: { apikey: KEY }, signal: controller.signal });
+    if (!res.ok) return {};
+    const rows = await res.json();
+    return Array.isArray(rows) && rows[0]?.value && typeof rows[0].value === 'object' ? rows[0].value : {};
+  } catch {
+    return {};
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}

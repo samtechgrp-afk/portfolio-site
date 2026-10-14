@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './project.css';
 import PageRenderer from './components/builder/PageRenderer.jsx';
 import { fetchFonts, fetchProject, fetchProjects } from './supabase.js';
+import { siteSettings } from './siteSettings.js';
 import { usesBlockType } from './components/builder/blockTree.js';
 import { withSiteFont } from './siteTypography.js';
 
@@ -67,6 +68,9 @@ function App() {
 
   useEffect(load, [load]);
 
+  const [iconUrl, setIconUrl] = useState(undefined);
+  useEffect(() => { siteSettings.then((s) => setIconUrl(s.siteIconUrl || '')); }, []);
+
   const { status, project, fonts, projects } = state;
   useEffect(() => {
     if (status !== 'ok') { document.title = 'Project | Samuel Prah'; return; }
@@ -112,7 +116,7 @@ function App() {
               </header>
 
               {project.blocks?.length ? (
-                <PageRenderer blocks={project.blocks} typography={typography} title={project.title} fonts={fonts} projects={projects} />
+                <PageRenderer blocks={project.blocks} typography={typography} title={project.title} fonts={fonts} projects={projects} siteIconUrl={iconUrl} />
               ) : http(project.cover_url) ? (
                 <img className="work__cover" src={project.cover_url} alt="" referrerPolicy="no-referrer" />
               ) : null}
